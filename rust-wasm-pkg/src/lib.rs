@@ -1,14 +1,33 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+use wasm_bindgen::prelude::*;
+use serde_wasm_bindgen::to_value;
+
+#[wasm_bindgen]
+pub struct TodoList {
+    items: Vec<String>,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+#[wasm_bindgen]
+impl TodoList {
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> TodoList {
+        TodoList { items: Vec::new() }
+    }
+
+    #[wasm_bindgen]
+    pub fn add(&mut self, item: String) {
+        self.items.push(item);
+    }
+
+    #[wasm_bindgen]
+    pub fn remove(&mut self, index: usize) {
+        if index <self.items.len() {
+            self.items.remove(index);
+        }
+    }
+
+    #[wasm_bindgen]
+    pub fn get_item(&self) -> JsValue {
+        to_value(&self.items).unwrap_or(JsValue::UNDEFINED)
     }
 }
